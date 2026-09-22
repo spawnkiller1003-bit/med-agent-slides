@@ -31,12 +31,12 @@ AI agent基本功教學專案/
     └── 30分鐘簡報_給醫護人員的AI_Agent實戰指南.html    # 高互動大字滿版 HTML 簡報（支援全螢幕、計時器、講者小抄）
 ```
 
-## 同步層級（本專案初始化至第 1 層級：L1 本地）
+## 同步層級（本專案已升級至第 2 層級：L2 GitHub）
 
 | 層級 | 平台 | 位置 | 讀取時機 | 狀態說明 |
 |:---:|:---|:---|:---|:---|
 | **L1** | 本地（GDrive） | `agents.md` ＋ `handoff.md` | 每個 session 必讀 | ✅ 已啟用（本機完整建立） |
-| **L2** | GitHub | 未啟用 | 指定時 | ⚠️ 未啟用（本機未偵測到 `gh` CLI 登入） |
+| **L2** | GitHub | [`spawnkiller1003-bit/med-agent-slides`](https://github.com/spawnkiller1003-bit/med-agent-slides) ｜ [GitHub Pages 線上簡報](https://spawnkiller1003-bit.github.io/med-agent-slides/) | 指定時 / 線上分享 | ✅ 已啟用（GitHub Pages 公開上線） |
 | **L3** | Obsidian | 未啟用 | 有需要時 | ⚠️ 未啟用（這台電腦目前未配置 Obsidian MCP） |
 
 ## 工作約定
