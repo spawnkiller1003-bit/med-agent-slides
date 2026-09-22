@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>從「動嘴」到「動手」：AI Agent 臨床省力實戰指南（30分鐘簡報）</title>
+  <style>
+    /* ==========================================================================
+       完全獨立、零外聯依賴、支援完全離線（純原生 CSS 系統）
+       包含桌面大螢幕投影滿版、平板與手機極致適配、深色高對比醫療科技風
+       ========================================================================== */
+
+    :root {
+      --bg-base: #030712;
+      --bg-surface: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #273549;
+      --border-base: #334155;
+      --border-subtle: #1e293b;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --cyan-400: #38bdf8;
+      --cyan-500: #0ea5e9;
+      --cyan-950: #082f49;
+
+      --teal-300: #5eead4;
+      --teal-400: #2dd4bf;
+      --teal-950: #042f2e;
+
+      --emerald-400: #34d399;
+      --emerald-500: #10b981;
+      --emerald-900: #064e3b;
+      --emerald-950: #022c22;
+
+      --rose-400: #fb7185;
+      --rose-500: #f43f5e;
+      --rose-900: #4c0519;
+      --rose-950: #2a030d;
+
+      --amber-400: #fbbf24;
+      --amber-500: #f59e0b;
+      --amber-950: #451a03;
+
+      --indigo-400: #818cf8;
+      --indigo-950: #1e1b4b;
+    }
+
+    /* 基礎重設與系統字型（跨 Windows/Mac/iOS/Android 免連網高清顯示） */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.6;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 主應用佈局：頂部導覽 + 中間投影片容器 + 底部控制列 */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh; /* 支援行動瀏覽器動態高度 */
+      position: relative;
+    }
+
+    /* 頂部 Header */
+    header {
+      height: 60px;
+      flex-shrink: 0;
+      background: rgba(3, 7, 18, 0.92);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      font-size: clamp(0.95rem, 2vw, 1.25rem);
+      letter-spacing: -0.02em;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--cyan-400);
+      box-shadow: 0 0 10px var(--cyan-400);
+    }
+    .brand-highlight {
+      color: var(--cyan-400);
+    }
+
+    /* 倒數計時器 */
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      padding: 4px 12px;
+      border-radius: 9999px;
+    }
+    .timer-time {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--amber-400);
+    }
+    .timer-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+    .timer-btn:hover {
+      color: #fff;
+    }
+
+    /* 頂部右側快捷按鈕群 */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover {
+      background: var(--bg-card);
+      border-color: var(--cyan-500);
+    }
+    .kbd-shortcut {
+      background: var(--border-subtle);
+      border: 1px solid var(--border-base);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* 主簡報舞台 */
+    main {
+      flex: 1;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* 投影片單元 */
+    .slide {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1120px;
+      min-height: 100%;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(6px) scale(0.99);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 12px 0;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* 簡報大字排版體系 */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      width: fit-content;
+    }
+    .slide-tag.cyan {
+      background: var(--cyan-950);
+      border: 1px solid var(--cyan-500);
+      color: var(--cyan-400);
+    }
+    .slide-tag.rose {
+      background: var(--rose-950);
+      border: 1px solid var(--rose-500);
+      color: var(--rose-400);
+    }
+    .slide-tag.emerald {
+      background: var(--emerald-950);
+      border: 1px solid var(--emerald-500);
+      color: var(--emerald-400);
+    }
+    .slide-tag.amber {
+      background: var(--amber-950);
+      border: 1px solid var(--amber-500);
+      color: var(--amber-400);
+    }
+
+    .slide-title {
+      font-size: clamp(1.65rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .slide-desc {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      font-weight: 500;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* 卡片與網格體系 */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: auto 0;
+      padding: 12px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: auto 0;
+      padding: 12px 0;
+    }
+    .grid-scenario {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: auto 0;
+      padding: 12px 0;
+    }
+    @media (min-width: 900px) {
+      .grid-scenario {
+        grid-template-columns: 5fr 7fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vw, 24px);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .card.glow-cyan {
+      border-color: var(--cyan-500);
+      box-shadow: 0 0 35px -10px rgba(14, 165, 233, 0.3);
+    }
+    .card.glow-emerald {
+      border-color: var(--emerald-500);
+      box-shadow: 0 0 35px -10px rgba(16, 185, 129, 0.3);
+    }
+    .card.glow-amber {
+      border-color: var(--amber-500);
+      box-shadow: 0 0 35px -10px rgba(245, 158, 11, 0.3);
+    }
+    .card.danger {
+      background: rgba(42, 3, 13, 0.35);
+      border-color: var(--rose-900);
+    }
+
+    /* 項目清單樣式 */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    }
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .bullet-icon-cross {
+      color: var(--rose-400);
+      font-weight: 900;
+      font-size: 1.2em;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .bullet-icon-check {
+      color: var(--cyan-400);
+      font-weight: 900;
+      font-size: 1.2em;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* 指令提示方塊（Prompt Box） */
+    .prompt-box {
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 14px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+      line-height: 1.6;
+      color: #bae6fd;
+      margin: 8px 0;
+      word-break: break-word;
+    }
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--cyan-400);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 2px 6px;
+    }
+    .copy-btn:hover {
+      color: #fff;
+    }
+
+    /* 第8頁：單一方框去識別化專用高對比樣式 */
+    .deid-single-box {
+      background: #020617;
+      border: 2px solid var(--rose-500);
+      border-radius: 16px;
+      padding: clamp(14px, 2.5vw, 24px);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      line-height: 1.8;
+      color: #f1f5f9;
+      transition: all 0.3s ease;
+      word-break: break-word;
+    }
+    .deid-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      margin: 1px 2px;
+      transition: all 0.25s ease;
+    }
+    .deid-tag.exposed {
+      background: var(--rose-900);
+      color: #fff;
+      border: 1px solid var(--rose-500);
+    }
+    .deid-tag.masked {
+      background: var(--emerald-600);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      transform: scale(1.02);
+    }
+
+    /* 底部控制導覽列 */
+    footer {
+      height: 64px;
+      flex-shrink: 0;
+      background: rgba(3, 7, 18, 0.94);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .nav-btn-prev {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      color: var(--text-main);
+    }
+    .nav-btn-prev:hover:not(:disabled) {
+      background: var(--bg-card);
+    }
+    .nav-btn-next {
+      background: var(--cyan-500);
+      color: #030712;
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+    }
+    .nav-btn-next:hover:not(:disabled) {
+      background: var(--cyan-400);
+    }
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .progress-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      max-width: 320px;
+    }
+    .page-counter {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--cyan-400);
+    }
+    .progress-track {
+      width: 100%;
+      height: 5px;
+      background: var(--bg-surface);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan-500), var(--teal-400));
+      width: 10%;
+      transition: width 0.3s ease;
+    }
+
+    /* 抽屜側邊欄：講者筆記（按 N） */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 380px;
+      background: rgba(15, 23, 42, 0.98);
+      border-left: 1px solid var(--border-base);
+      backdrop-filter: blur(16px);
+      z-index: 60;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    /* 彈窗：總覽縮圖目錄（按 O） */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.92);
+      backdrop-filter: blur(16px);
+      z-index: 70;
+      display: none;
+      flex-direction: column;
+      padding: clamp(16px, 4vw, 32px);
+    }
+    .modal.open {
+      display: flex;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      overflow-y: auto;
+      padding: 16px 0;
+      max-width: 1080px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .thumb-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 110px;
+      transition: all 0.2s;
+    }
+    .thumb-card.active {
+      border-color: var(--cyan-400);
+      background: var(--cyan-950);
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+    }
+    .thumb-card:hover {
+      border-color: var(--text-muted);
+    }
+
+    /* 吐司提示 Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--cyan-400);
+      color: #030712;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 80;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 手機直向極致自適應微調 */
+    @media (max-width: 640px) {
+      header {
+        padding: 0 10px;
+        height: 52px;
+      }
+      .brand-title {
+        display: none;
+      }
+      .pill-btn span.lbl {
+        display: none;
+      }
+      main {
+        padding: 12px 10px;
+        align-items: flex-start;
+      }
+      .slide {
+        padding-bottom: 24px;
+        min-height: auto;
+      }
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .card {
+        padding: 14px;
+      }
+      footer {
+        height: 58px;
+        padding: 0 10px;
+      }
+      .nav-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+      .kbd-shortcut {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- 頂部資訊工具列 -->
+    <header>
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <span class="brand-title">AI Agent <span class="brand-highlight">臨床省力實戰</span></span>
+        <span id="headerSectionBadge" style="background: var(--bg-surface); border: 1px solid var(--border-base); font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px; color: var(--cyan-400); font-weight: 700;">Part 1</span>
+      </div>
+
+      <!-- 30分鐘倒數計時器 -->
+      <div class="timer-widget">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">控時</span>
+        <span id="timerDisplay" class="timer-time">30:00</span>
+        <button id="timerToggleBtn" onclick="toggleTimer()" title="啟動/暫停計時" class="timer-btn">
+          <svg id="playIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <button onclick="resetTimer()" title="重設 30:00" class="timer-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+      </div>
+
+      <!-- 功能按鈕群 -->
+      <div class="nav-actions">
+        <button onclick="toggleNotes()" class="pill-btn" title="演講者小抄 (按 N)">
+          <span>📝</span>
+          <span class="lbl">講者筆記</span>
+          <span class="kbd-shortcut">N</span>
+        </button>
+        <button onclick="toggleOverview()" class="pill-btn" title="縮圖大綱目錄 (按 O)">
+          <span>🗺️</span>
+          <span class="lbl">目錄</span>
+          <span class="kbd-shortcut">O</span>
+        </button>
+        <button onclick="toggleFullscreen()" class="pill-btn" title="全螢幕切換 (按 F)">
+          <span>🖥️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 主要簡報舞台 -->
+    <main id="presentationContainer">
+
+      <!-- ==================== SLIDE 1 ==================== -->
+      <section class="slide active" data-section="Part 1: 痛點破冰" data-time="0~2 min">
+        <div>
+          <div class="slide-tag cyan">🩺 專為醫師、醫師助理 (PA) 與 專科護理師 (NP) 打造</div>
+          <h1 class="slide-title">
+            從<span style="color: var(--text-dim); text-decoration: line-through; margin-right: 4px;">「動嘴」</span>到<span style="color: var(--cyan-400);">「動手」</span>：<br>
+            AI Agent 如何幫醫護奪回準時下班的權利？
+          </h1>
+          <p class="slide-desc">告別繁瑣的病歷彙整、重複造輪子的 Excel 統計與無休止的手動交接</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card danger">
+            <div style="color: var(--rose-400); font-weight: 900; font-size: 1.25rem; margin-bottom: 8px;">
+              😫 現實：被行政雜務淹沒
+            </div>
+            <p style="color: #cbd5e1; font-size: clamp(0.95rem, 1.8vw, 1.25rem);">
+              每天耗費 <strong style="color: var(--rose-400); font-size: 1.4em;">30%~40%</strong> 寶貴時間充當「人肉資料搬運工」，重複複製貼上檢驗值、出院病摘與班表。
+            </p>
+          </div>
+          <div class="card glow-cyan">
+            <div style="color: var(--cyan-400); font-weight: 900; font-size: 1.25rem; margin-bottom: 8px;">
+              🦾 未來：數位實習醫事助理
+            </div>
+            <p style="color: #f1f5f9; font-size: clamp(0.95rem, 1.8vw, 1.25rem);">
+              一句話指揮具備「手和腳」的 AI Agent，直接讀取檔案、產出結構化交接單與報表，把時間還給病人與自己。
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 12px; font-size: 0.85rem; color: var(--text-dim);">
+          <span>⏱️ 演講總長度：30 分鐘</span>
+          <span style="color: var(--cyan-400); font-weight: 700;">按 [空白鍵] 或 [➡️] 進入下一頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 2 ==================== -->
+      <section class="slide" data-section="Part 1: 痛點破冰" data-time="2~5 min">
+        <div>
+          <div class="slide-tag rose">現實痛點剖析</div>
+          <h2 class="slide-title">我們都試過 ChatGPT，為什麼它沒能拯救你的臨床日常？</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 1.25rem; font-weight: 900;">網頁版 ChatGPT</span>
+              <span style="font-size: 0.75rem; background: var(--bg-card); padding: 3px 8px; border-radius: 9999px; color: var(--text-muted);">動嘴的軍師 🧠</span>
+            </div>
+            <ul class="bullet-list">
+              <li class="bullet-item">
+                <span class="bullet-icon-cross">✗</span>
+                <span><strong>碰不到你的電腦</strong>：關在瀏覽器分頁裡，摸不到你的 Word、Excel 與 PDF。</span>
+              </li>
+              <li class="bullet-item">
+                <span class="bullet-icon-cross">✗</span>
+                <span><strong>你依舊是搬運工</strong>：必須自己手動複製文字、貼過去、再手動複製貼回 HIS 系統。</span>
+              </li>
+              <li class="bullet-item">
+                <span class="bullet-icon-cross">✗</span>
+                <span><strong>聊久了容易失憶</strong>：長篇對話容易產生幻覺，甚至推翻前文設定的格式。</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card glow-cyan" style="background: rgba(8, 47, 73, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 1.25rem; font-weight: 900; color: var(--cyan-400);">本機 AI Agent</span>
+              <span style="font-size: 0.75rem; background: var(--cyan-950); border: 1px solid var(--cyan-500); padding: 3px 8px; border-radius: 9999px; color: var(--cyan-400);">有手腳的實習生 🦾</span>
+            </div>
+            <ul class="bullet-list">
+              <li class="bullet-item">
+                <span class="bullet-icon-check">✓</span>
+                <span><strong>直接讀寫本機檔案</strong>：直接讀取指定資料夾裡的 10 份檢驗報告與病歷筆記。</span>
+              </li>
+              <li class="bullet-item">
+                <span class="bullet-icon-check">✓</span>
+                <span><strong>自動跑完流程</strong>：自己寫 Python 腳本統計合併 Excel，產出乾淨報表。</span>
+              </li>
+              <li class="bullet-item">
+                <span class="bullet-icon-check">✓</span>
+                <span><strong>你升級為審核主管</strong>：發號施令、檢查結果，不再被繁瑣庶務綁架！</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 12px 16px; font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+          <span>💡 <strong>核心差別</strong>：你需要的不是只會聊天的百科全書，而是能替你按按鍵、整理檔案的數位雙手。</span>
+          <span style="color: var(--cyan-400);">第 2 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 3 ==================== -->
+      <section class="slide" data-section="Part 2: 觀念降維" data-time="5~8 min">
+        <div>
+          <div class="slide-tag emerald">核心概念解密</div>
+          <h2 class="slide-title">觀念升級：什麼是真正的「AI Agent」？給大腦裝上手與腳</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">🧠</div>
+            <div style="color: var(--cyan-400); font-weight: 900; font-size: 1.25rem; margin-bottom: 6px;">1. 大腦思考 (LLM)</div>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">理解臨床需求、拆解任務目標、做出決策步驟。</p>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">⚡</div>
+            <div style="color: var(--emerald-400); font-weight: 900; font-size: 1.25rem; margin-bottom: 6px;">2. 工具呼叫 (Tool Use)</div>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">神經傳導系統：大腦自主決定何時讀檔、寫檔或跑程式。</p>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">🦾</div>
+            <div style="color: var(--amber-400); font-weight: 900; font-size: 1.25rem; margin-bottom: 6px;">3. 本地手腳 (Actions)</div>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">直接在電腦操作 Word/Excel/PDF，產生最終成品。</p>
+          </div>
+        </div>
+
+        <div class="card glow-cyan" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(8, 47, 73, 0.3);">
+          <div>
+            <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">經典情境：整理 10 份檢驗報告數值</div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">ChatGPT 要你複製貼上 10 次 ➔ AI Agent 直接把 10 份 PDF/Excel 讀完，產出標註紅字異常的交班表！</div>
+          </div>
+          <span style="background: var(--cyan-500); color: #020617; font-weight: 900; padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; white-space: nowrap;">省時 90%</span>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; font-size: 0.85rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+          <span>EP01 & EP03 精華：賦予 AI 真正的環境操作能力</span>
+          <span style="color: var(--cyan-400);">第 3 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 4 ==================== -->
+      <section class="slide" data-section="Part 2: 觀念降維" data-time="8~12 min">
+        <div>
+          <div class="slide-tag cyan">運作邏輯</div>
+          <h2 class="slide-title">不必學寫程式，但必須懂的 3 個 Agent 底層規則</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div style="color: var(--cyan-400); font-size: 1.25rem; font-weight: 900; margin-bottom: 6px;">🛡️ 1. 權限邊界</div>
+            <div style="font-weight: 800; margin-bottom: 8px;">安全第一：做任何事受你控管</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">遇到「修改檔案」或「執行動作」時，它會主動提示並詢問你的授權，絕不擅自狂刪檔案。</p>
+          </div>
+          <div class="card">
+            <div style="color: var(--emerald-400); font-size: 1.25rem; font-weight: 900; margin-bottom: 6px;">📋 2. 專案手冊</div>
+            <div style="font-weight: 800; margin-bottom: 8px;">如同新人規章：一次設定永久遵守</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">在資料夾放一份範本（如 SOAP 格式、排班限制），Agent 每次做事都會自動遵守，不用每次重教。</p>
+          </div>
+          <div class="card">
+            <div style="color: var(--amber-400); font-size: 1.25rem; font-weight: 900; margin-bottom: 6px;">🪟 3. 上下文防呆</div>
+            <div style="font-weight: 800; margin-bottom: 8px;">長聊必笨：單一任務單一對話</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">對話塞滿雜訊會讓 AI 忘記最初指示。任務完成就寫交接檔並開新對話，如同換乾淨的病歷夾！</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 12px 16px; font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+          <span>💡 <strong>醫護金句</strong>：如同帶領實習醫護，給予清楚規範（Routine）與定期交接，Agent 就能精準運作。</span>
+          <span style="color: var(--cyan-400);">第 4 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 5 ==================== -->
+      <section class="slide" data-section="Part 3: 臨床實戰" data-time="12~15 min">
+        <div>
+          <div class="slide-tag cyan">實戰場景 01：醫師、PA、NP 每日痛點</div>
+          <h2 class="slide-title">病歷筆記、SBAR 交班與出院病摘初稿秒整理</h2>
+        </div>
+
+        <div class="grid-scenario">
+          <div class="card danger" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--rose-400); font-weight: 900; font-size: 1.2rem; margin-bottom: 8px;">😫 住院兩週的患者要出院了...</div>
+              <p style="color: #cbd5e1; font-size: 0.95rem;">厚厚十幾天的照會紀錄（心內、感染、內分泌）、抗生素更換與每日檢驗值，要在 15 分鐘內擠出「出院病摘」初稿！</p>
+            </div>
+            <div style="background: #020617; padding: 10px; border-radius: 10px; font-size: 0.85rem; color: var(--text-muted); margin-top: 12px;">
+              ⏳ 手動翻查：20~30 分鐘 ➔ ⚡ Agent 自動萃取：<strong>20 秒</strong>
+            </div>
+          </div>
+
+          <div class="card glow-cyan" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--cyan-400); font-weight: 800; font-size: 0.85rem;">🗣️ 你對 Agent 說的一句話：</span>
+                <button class="copy-btn" onclick="copyPrompt('prompt1')">點擊複製指令</button>
+              </div>
+              <div id="prompt1" class="prompt-box">
+                「請讀取這個資料夾內去識別化的每日進展筆記，依照本院出院病摘格式，整理出：<br>
+                1. 入院主訴與診斷<br>
+                2. 住院期間關鍵處置時間軸（抗生素更換、手術、照會）<br>
+                3. 出院時穩定狀態與回診帶藥建議初稿。」
+              </div>
+            </div>
+            <div style="background: #020617; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; border-left: 3px solid var(--emerald-400);">
+              <div style="color: var(--emerald-400); font-weight: 800; margin-bottom: 4px;">✓ Agent 秒出結構化時間軸：</div>
+              <div style="color: var(--text-muted);">• Day 1: 急診入院 CAP，使用 Ceftriaxone<br>• Day 4: 痰液長 Pseudomonas，改換 Levofloxacin<br>• Day 10: 抽血 WBC 正常、退燒，預備出院</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; font-size: 0.85rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+          <span>醫護職責：只需以醫學專業進行最終 Review 與簽核確認！</span>
+          <span style="color: var(--cyan-400);">第 5 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 6 ==================== -->
+      <section class="slide" data-section="Part 3: 臨床實戰" data-time="15~18 min">
+        <div>
+          <div class="slide-tag emerald">實戰場景 02：科室行政與考核評鑑</div>
+          <h2 class="slide-title">告別手動對照 — 班表、受訓時數與考評統計一鍵自動化</h2>
+        </div>
+
+        <div class="grid-scenario">
+          <div class="card danger" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--rose-400); font-weight: 900; font-size: 1.2rem; margin-bottom: 8px;">😫 月底到了，手上一堆順序不同的 Excel 表</div>
+              <p style="color: #cbd5e1; font-size: 0.95rem;">3 個月份的簽到表欄位名稱不一，必須抓出「全科受訓時數未滿 20 小時名單」。不用再熬夜手動查 <code>VLOOKUP</code> 了！</p>
+            </div>
+            <div style="background: #020617; padding: 10px; border-radius: 10px; font-size: 0.85rem; color: var(--text-muted); margin-top: 12px;">
+              📊 痛點：格式對不齊、漏看一列就算錯 ➔ 🚀 解法：Python pandas 自動對齊
+            </div>
+          </div>
+
+          <div class="card glow-emerald" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--emerald-400); font-weight: 800; font-size: 0.85rem;">🗣️ 你對 Agent 說的一句話：</span>
+                <button class="copy-btn" onclick="copyPrompt('prompt2')" style="color: var(--emerald-400);">點擊複製指令</button>
+              </div>
+              <div id="prompt2" class="prompt-box" style="border-color: rgba(52, 211, 153, 0.3); color: #d1fae5;">
+                「資料夾內有三個月份的『在職受訓簽到.xlsx』。<br>
+                請自動合併所有人員的總時數，剔除重複名單，並篩選出總時數未滿 20 小時的名單，另存為『需補訓名冊.xlsx』。」
+              </div>
+            </div>
+            <div style="background: #020617; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; border-left: 3px solid var(--cyan-400);">
+              <div style="color: var(--cyan-400); font-weight: 800; margin-bottom: 4px;">⚡ Agent 的全自動執行過程：</div>
+              <div style="color: var(--text-muted);">1. 自動載入 Python 工具庫讀取檔案<br>2. 自動校正欄位差異，合併 142 筆簽到紀錄<br>3. 篩選出 8 位未達標同仁，存出乾淨新 Excel</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; font-size: 0.85rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+          <span>EP03 精華：一句話指揮 Python 處理辦公室文書，完全免寫代碼！</span>
+          <span style="color: var(--cyan-400);">第 6 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 7 ==================== -->
+      <section class="slide" data-section="Part 3: 臨床實戰" data-time="18~22 min">
+        <div>
+          <div class="slide-tag amber">實戰場景 03：晨會報告與臨床決策</div>
+          <h2 class="slide-title">面對 80 頁最新臨床指引（Guidelines），1 分鐘抓出關鍵建議</h2>
+        </div>
+
+        <div class="grid-scenario">
+          <div class="card danger" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--rose-400); font-weight: 900; font-size: 1.2rem; margin-bottom: 8px;">😫 明晨要報 Case，需要最新指引背書</div>
+              <p style="color: #cbd5e1; font-size: 0.95rem;">醫學會剛公布厚達數十頁的英文指引 PDF。只想立刻確認：特定合併症病患目前的推薦等級（Class）與第一線禁忌症？</p>
+            </div>
+            <div style="background: #020617; padding: 10px; border-radius: 10px; font-size: 0.85rem; color: var(--text-muted); margin-top: 12px;">
+              🔍 普通 AI：容易瞎掰或含糊 ➔ 🎯 Agent：<strong>帶著精確頁碼與原文佐證回覆！</strong>
+            </div>
+          </div>
+
+          <div class="card glow-amber" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--amber-400); font-weight: 800; font-size: 0.85rem;">🗣️ 你對 Agent 說的一句話：</span>
+                <button class="copy-btn" onclick="copyPrompt('prompt3')" style="color: var(--amber-400);">點擊複製指令</button>
+              </div>
+              <div id="prompt3" class="prompt-box" style="border-color: rgba(251, 191, 36, 0.3); color: #fef3c7;">
+                「請研讀資料夾中的『2026_ADA_Guideline.pdf』，定位到有關『CKD 第 3 期合併心衰竭』章節，列出推薦藥物等級（Class I/II）及禁忌症，並標註來自哪一頁。」
+              </div>
+            </div>
+            <div style="background: #020617; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; border-left: 3px solid var(--amber-400);">
+              <div style="color: var(--amber-400); font-weight: 800; margin-bottom: 4px;">📑 Agent 帶著證據回覆：</div>
+              <div style="color: var(--text-muted);">• 推薦等級：SGLT2i 為 <strong>Class I (Level A)</strong> 推薦<br>• 禁忌/注意：eGFR &lt; 20 需監測水分（詳見 <strong>第 42 頁 表 9.2</strong>）<br>• 晨會直接引用，杜絕 AI 幻覺！</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; font-size: 0.85rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+          <span>杜絕 AI 幻覺的最強武器：指定本機指引文檔，強制要求頁碼出處！</span>
+          <span style="color: var(--cyan-400);">第 7 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 8: 同一個方框一鍵去識別化 ==================== -->
+      <section class="slide" data-section="Part 4: 醫療安全" data-time="22~25 min">
+        <div>
+          <div class="slide-tag rose">醫療法規與職業防線</div>
+          <h2 class="slide-title">重要防線：醫療個資去識別化與法律邊界</h2>
+        </div>
+
+        <div id="deidCardContainer" class="card" style="border: 2px solid var(--rose-500); margin: auto 0;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.25rem; font-weight: 900; color: var(--rose-400);">🔒 臨床文字即時處理</span>
+              <span id="deidStatusBadge" style="background: var(--rose-950); border: 1px solid var(--rose-500); color: var(--rose-400); font-size: 0.75rem; font-weight: 800; padding: 2px 10px; border-radius: 9999px;">
+                ⚠️ 原始未去識別化狀態（含敏感個資，嚴禁上傳）
+              </span>
+            </div>
+            <!-- 一鍵去識別化互動按鈕 -->
+            <button id="deidBtn" onclick="toggleDeidDemo()" style="background: linear-gradient(135deg, var(--cyan-500), var(--teal-400)); color: #020617; border: none; font-weight: 900; font-size: 0.9rem; padding: 8px 18px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);">
+              ✨ 點擊執行：一鍵去識別化
+            </button>
+          </div>
+
+          <!-- 同一個文字方框 -->
+          <div style="margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px;">
+              <span>病歷紀錄觀察窗（點擊上方按鈕觀察下方同一方框內的變化）：</span>
+              <span id="deidHint" style="color: var(--rose-400); font-weight: 700;">個資暴露中</span>
+            </div>
+            <div id="singleRecordBox" class="deid-single-box">
+              病患 <span id="deidName" class="deid-tag exposed">王大明</span>，病歷號 <span id="deidChart" class="deid-tag exposed">10982341</span>，民國 <span id="deidBirth" class="deid-tag exposed">48 年 3 月 5 日生</span>，身分證 <span id="deidId" class="deid-tag exposed">A123456789</span>，現居 <span id="deidAddr" class="deid-tag exposed">竹北市光明六路12號</span>。<br><br>
+              主訴：急性胸痛 2 小時伴隨冒冷汗，心電圖診斷為 ST-segment elevation，已立即安排緊急心導管 PCI 介入處置...
+            </div>
+          </div>
+
+          <!-- 三大鐵律標籤 -->
+          <div class="grid-3" style="margin: 0; padding: 0;">
+            <div style="background: #020617; border: 1px solid var(--border-subtle); padding: 10px; border-radius: 10px; font-size: 0.85rem;">
+              ❌ <strong>姓名/電話/地址</strong> 絕不上雲端
+            </div>
+            <div style="background: #020617; border: 1px solid var(--border-subtle); padding: 10px; border-radius: 10px; font-size: 0.85rem;">
+              ❌ <strong>身分證/病歷號</strong> 一律移除或代碼化
+            </div>
+            <div style="background: #020617; border: 1px solid var(--border-subtle); padding: 10px; border-radius: 10px; font-size: 0.85rem;">
+              ✅ <strong>Human-in-the-loop</strong> 人類永遠最終核簽
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; font-size: 0.85rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+          <span>⚖️ <strong>銘記在心</strong>：AI 是幫你省力的「手腳」，但蓋章扛責的永遠是「具備執照的你」。</span>
+          <span style="color: var(--cyan-400);">第 8 / 10 頁</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 9 ==================== -->
+      <section class="slide" data-section="Part 5: 明天開始" data-time="25~27 min">
+        <div>
+          <div class="slide-tag cyan">落地指南</div>
+          <h2 class="slide-title">新手落地：明天上班，你可以嘗試的 3 個小步驟</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--cyan-950); border: 1px solid var(--cyan-500); color: var(--cyan-400); display: flex; align-items: center; justify-content: center; font-weight: 900; margin-bottom: 12px;">1</div>
+              <div style="font-weight: 800; font-size: 1.15rem; margin-bottom: 6px; color: #fff;">找一件最痛苦的重複雜事</div>
+              <p style="color: var(--text-muted); font-size: 0.95rem;">不要想一步登天改變全院 HIS 系統！先挑選：晨會論文摘要、交班單文字對齊、或每月手動算考核時數的 Excel。</p>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--cyan-400); font-weight: 700; margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">🎯 鎖定微小、高頻的痛點</div>
+          </div>
+
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--emerald-950); border: 1px solid var(--emerald-500); color: var(--emerald-400); display: flex; align-items: center; justify-content: center; font-weight: 900; margin-bottom: 12px;">2</div>
+              <div style="font-weight: 800; font-size: 1.15rem; margin-bottom: 6px; color: #fff;">建立專用資料夾與範本</div>
+              <p style="color: var(--text-muted); font-size: 0.95rem;">在電腦裡建一個專門資料夾，放進你要處理的檔案，並放一份你想要的格式範本（如科內標準出院病摘格式）。</p>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--emerald-400); font-weight: 700; margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">📁 提供 AI 清楚的遵循規範</div>
+          </div>
+
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--amber-950); border: 1px solid var(--amber-500); color: var(--amber-400); display: flex; align-items: center; justify-content: center; font-weight: 900; margin-bottom: 12px;">3</div>
+              <div style="font-weight: 800; font-size: 1.15rem; margin-bottom: 6px; color: #fff;">一句話請 Agent 動工</div>
+              <p style="color: var(--text-muted); font-size: 0.95rem;">給出明確指令：<strong>「讀取資料夾內的 A，依照範本 B 的格式，產出結果存為 C」</strong>。確認無誤後完成交接！</p>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--amber-400); font-weight: 700; margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">🦾 體驗手腳動起來的省力感</div>
+          </div>
+        </div>
+
+        <div class="card glow-cyan" style="text-align: center; padding: 14px; background: rgba(8, 47, 73, 0.4);">
+          <p style="font-size: clamp(0.95rem, 1.8vw, 1.25rem); font-weight: 800; color: #f8fafc;">
+            「科技不是要取代醫護人員的溫度，而是把被電腦螢幕綁架的時間搶回來，還給病人、還給家人、還給我們自己。」
+          </p>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 10: 國軍醫院專用 Q&A ==================== -->
+      <section class="slide" data-section="Part 5: 明天開始" data-time="27~30 min">
+        <div>
+          <div class="slide-tag cyan">互動時間</div>
+          <h2 class="slide-title">Q & A 現場提問與實戰交流</h2>
+          <p class="slide-desc">大家最關心的 2 大臨床疑慮實戰解答（點擊卡片可展開查看細節）：</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- FAQ 1: 國軍醫院資安解法 -->
+          <div class="card glow-cyan" onclick="toggleFaq('faq1')" style="cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 900; font-size: clamp(1rem, 1.8vw, 1.25rem); color: #fff;">Q1: 國軍醫院公務電腦「不可連網、不可插 USB、不可裝第三方 App」，該怎麼辦？</span>
+              <span id="faq1Arrow" style="color: var(--cyan-400); font-size: 1.2rem; font-weight: 900;">▼</span>
+            </div>
+            <div id="faq1" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6;">
+              <div style="background: rgba(8, 47, 73, 0.6); border: 1px solid var(--cyan-500); padding: 8px 12px; border-radius: 8px; font-weight: 800; color: var(--cyan-400); margin-bottom: 8px;">
+                💡 實戰落地解法：雙軌工作流（私人筆電跑 Agent ＋ 合規傳輸管道）
+              </div>
+              <ol style="padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+                <li><strong>Agent 在自己私人筆電上工作</strong>：不受公務內網限制，擁有完整 AI 運算與套件支援能力。</li>
+                <li><strong>病患資料擷取途徑</strong>：
+                  <br>• 從<strong>行動雲端查房系統</strong>直接於個人裝置擷取（並先做好去識別化）。
+                  <br>• 若資料在公用電腦內網，則透過<strong>公務 Email（寄信給自己）</strong>或<strong>院內合法雲端交換檔案</strong>管道轉出至私人筆電。
+                </li>
+                <li><strong>處理成果傳回公用電腦</strong>：Agent 完成結構化病摘或統計後，<strong>比照上述 Email 或雲端交換檔案傳回公用電腦</strong>，安全貼回系統！</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="card glow-amber" onclick="toggleFaq('faq2')" style="cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 900; font-size: clamp(1rem, 1.8vw, 1.25rem); color: #fff;">Q2: 如果 AI 算錯劑量或寫錯病摘怎麼辦？</span>
+              <span id="faq2Arrow" style="color: var(--amber-400); font-size: 1.2rem; font-weight: 900;">▼</span>
+            </div>
+            <div id="faq2" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6;">
+              <div style="background: rgba(69, 26, 3, 0.6); border: 1px solid var(--amber-500); padding: 8px 12px; border-radius: 8px; font-weight: 800; color: var(--amber-400); margin-bottom: 8px;">
+                🛡️ 專業防線：要求數據出處 ＋ 人類最終簽核
+              </div>
+              <ol style="padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+                <li><strong>要求提供頁碼與引文</strong>：指令中要求它必須標明數據出處，方便你 3 秒內回溯原文。</li>
+                <li><strong>永遠堅持 Review 再送出</strong>：Agent 的產出是「初稿（Draft）」，你負責「核定簽署」。這也是人類專業不可被取代的價值所在！</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 18px;">
+          <div>
+            <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">感謝各位醫護夥伴的聆聽！</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">願 AI Agent 成為你臨床工作上最可靠的手和腳，準時下班！</div>
+          </div>
+          <button onclick="goToSlide(0)" style="background: linear-gradient(135deg, var(--cyan-500), var(--teal-400)); color: #020617; border: none; font-weight: 900; font-size: 0.85rem; padding: 8px 16px; border-radius: 10px; cursor: pointer;">
+            回到封面重播 ↺
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 底部控制導覽列 -->
+    <footer>
+      <button id="prevBtn" onclick="prevSlide()" class="nav-btn nav-btn-prev">
+        <span>⬅</span>
+        <span class="lbl">上一頁</span>
+      </button>
+
+      <div class="progress-container">
+        <div class="page-counter">
+          <span id="slideIndicator">01 / 10</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <button id="nextBtn" onclick="nextSlide()" class="nav-btn nav-btn-next">
+        <span class="lbl">下一頁</span>
+        <span>➡</span>
+      </button>
+    </footer>
+
+    <!-- 講者筆記抽屜 (按 N 鍵) -->
+    <div id="notesDrawer" class="drawer">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-base); padding-bottom: 10px; margin-bottom: 14px;">
+          <div style="font-weight: 900; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <span>📝</span> 講者小抄 & 講稿重點
+          </div>
+          <button onclick="toggleNotes()" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+        </div>
+        <div style="font-size: 0.75rem; font-weight: 800; color: var(--cyan-400); margin-bottom: 8px; text-transform: uppercase;">當前頁面建議說詞：</div>
+        <div id="notesContent" style="font-size: 0.9rem; line-height: 1.6; color: #cbd5e1; max-height: calc(100vh - 180px); overflow-y: auto;">
+          <!-- 動態注入講稿 -->
+        </div>
+      </div>
+      <div style="border-top: 1px solid var(--border-base); padding-top: 10px; font-size: 0.75rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+        <span>快捷鍵：按 N 快速開關</span>
+        <span>30 分鐘控時導航</span>
+      </div>
+    </div>
+
+    <!-- 縮圖目錄彈窗 (按 O 鍵) -->
+    <div id="overviewModal" class="modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1080px; width: 100%; margin: 0 auto 12px auto;">
+        <div>
+          <h3 style="font-size: 1.5rem; font-weight: 900; color: #fff;">簡報目錄與頁面導覽</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">點擊任意卡片可直接跳轉（按 ESC 或 O 關閉）</p>
+        </div>
+        <button onclick="toggleOverview()" style="background: var(--bg-card); border: 1px solid var(--border-base); color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+          關閉 (ESC)
+        </button>
+      </div>
+      <div id="overviewGrid" class="modal-grid">
+        <!-- 動態注入縮圖卡片 -->
+      </div>
+    </div>
+
+    <!-- Toast 提示方塊 -->
+    <div id="toast" class="toast">已成功複製指令！</div>
+
+  </div>
+
+  <!-- 完全獨立的原生 JavaScript 控制邏輯（零外聯庫） -->
+  <script>
+    // 演講者各頁講稿備忘錄
+    const presenterNotes = [
+      "【Slide 1 講稿】：各位醫師、PA 與 NP 夥伴大家午安。大家今天早上開了多少個臨床系統視窗？複製貼上了多少次檢驗報告？寫了多少份出院病摘？我們當初穿上白袍是為了救治病人，但現實是每天有 30%~40% 的時間都在當『人肉資料搬運工』。今天這 30 分鐘，我不講程式碼，只講怎麼讓 AI Agent 替你長出『手和腳』，幫你準時下班。",
+      "【Slide 2 講稿】：很多人試過 ChatGPT，覺得只能改英文信或查資料，對下午要交的 10 份交班報告毫無幫助。為什麼？因為傳統聊天 AI 只是『動嘴的軍師』，關在瀏覽器分頁裡，摸不到你的電腦。最累的依然是你這個搬運工！",
+      "【Slide 3 講稿】：真正的 AI Agent 跟 ChatGPT 的差別，在於它擁有『手和腳（Tool Use）』。當你要求它整理報告，它能直接打開檔案、抓取數值、對照標準值、把異常標紅，產出你立刻能用的檔案。你不再是搬運工，你是審核主管！",
+      "【Slide 4 講稿】：跟實習醫護交接時我們會給 Routine 手冊；跟 Agent 合作也是一樣。懂三件事：1. 權限邊界（安全第一，改檔先問）2. 專案手冊（給它格式範本）3. 上下文防呆（不要無止境長聊，單一任務單一對話）。",
+      "【Slide 5 講稿】：場景一：住院兩週的病人要出院，十幾天的照會與用藥紀錄。只要一句話，Agent 在 20 秒內抓出關鍵時間軸與回診帶藥建議初稿，醫護同仁只需做專業的 Review 核可！",
+      "【Slide 6 講稿】：場景二：月底考核或評鑑，手上一堆欄位順序不同的簽到 Excel。一句話指示 Agent 呼叫 Python (pandas)，幾秒鐘內合併完畢，自動抓出需補訓名冊，告別熬夜手動 VLOOKUP！",
+      "【Slide 7 講稿】：場景三：80 頁的最新 ADA 糖尿病指引 PDF，明早晨會要用。讓 Agent 研讀本機檔案，帶著『頁碼與推薦等級（Class I）』回覆，杜絕 AI 幻覺，精準可查證。",
+      "【Slide 8 講稿】：非常重要：醫療去識別化三大鐵律！大家看畫面上這個方框，點擊『一鍵去識別化』，姓名、病歷號、身分證和地址立刻在同一個方框內完全遮蔽隱藏，只保留臨床需要的年齡與病況。AI 寫的是 Draft，蓋章負責的是具備證照的你。保護病人也是保護自己。",
+      "【Slide 9 講稿】：明天上班怎麼開始？三步驟：1. 先找一件每週都要做的痛苦重複小事 2. 建立專用資料夾放範本 3. 一句話請 Agent 照範本動工。把被電腦綁架的時間搶回來！",
+      "【Slide 10 講稿】：Q&A 時間。針對國軍醫院最嚴格的資安限制（不能連外網、不能插隨身碟、不能裝 App），我們的臨床解法是『雙軌制』：Agent 在自己的私人筆電上運行，資料從雲端查房系統擷取，或透過公務 Email/雲端交換檔案傳遞，產出結果再傳回公用電腦。第二點是劑量查驗，AI 只是初稿，人類最終簽核。謝謝大家！"
+    ];
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    // 更新當前顯示投影片
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // 更新進度與指示器
+      const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+      document.getElementById('slideIndicator').innerText = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+      // 更新頂部章節徽章
+      const activeSlideEl = slides[currentSlide];
+      const secBadge = activeSlideEl.getAttribute('data-section') || 'Part 1';
+      document.getElementById('headerSectionBadge').innerText = secBadge;
+
+      // 更新按鈕啟用狀態
+      document.getElementById('prevBtn').disabled = (currentSlide === 0);
+      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides - 1);
+
+      // 更新講者小抄內容
+      document.getElementById('notesContent').innerHTML = `<p>${presenterNotes[currentSlide]}</p>`;
+
+      // 視窗滾動重置至頂部
+      document.getElementById('presentationContainer').scrollTop = 0;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateSlide();
+        closeOverview();
+      }
+    }
+
+    // 鍵盤快捷鍵導航
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'Space':
+        case 'PageDown':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'n':
+        case 'N':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+        case 'm':
+        case 'M':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'Escape':
+          closeOverview();
+          closeNotes();
+          break;
+      }
+    });
+
+    // 行動裝置觸控滑動支援 (Swipe)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      let touchEndX = e.changedTouches[0].screenX;
+      let touchEndY = e.changedTouches[0].screenY;
+      let diffX = touchStartX - touchEndX;
+      let diffY = touchStartY - touchEndY;
+      // 水平滑動幅度大於垂直滑動時判定為翻頁
+      if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    // 全螢幕切換
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // 講者筆記抽屜
+    function toggleNotes() {
+      const drawer = document.getElementById('notesDrawer');
+      drawer.classList.toggle('open');
+    }
+    function closeNotes() {
+      document.getElementById('notesDrawer').classList.remove('open');
+    }
+
+    // 縮圖大綱總覽模態
+    function toggleOverview() {
+      const modal = document.getElementById('overviewModal');
+      if (modal.classList.contains('open')) {
+        closeOverview();
+      } else {
+        renderOverviewGrid();
+        modal.classList.add('open');
+      }
+    }
+    function closeOverview() {
+      document.getElementById('overviewModal').classList.remove('open');
+    }
+
+    function renderOverviewGrid() {
+      const grid = document.getElementById('overviewGrid');
+      grid.innerHTML = '';
+      slides.forEach((s, idx) => {
+        const titleEl = s.querySelector('.slide-title');
+        const title = titleEl ? titleEl.innerText.replace(/\n/g, ' ') : `Slide ${idx+1}`;
+        const sec = s.getAttribute('data-section') || '';
+        const isCur = (idx === currentSlide);
+
+        const card = document.createElement('div');
+        card.className = `thumb-card ${isCur ? 'active' : ''}`;
+        card.onclick = () => goToSlide(idx);
+        card.innerHTML = `
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px;">
+              <span>P.${idx + 1}</span>
+              <span style="color: var(--cyan-400);">${sec}</span>
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 800; color: #fff; line-height: 1.3;">${title.slice(0, 32)}...</div>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 6px;">${s.getAttribute('data-time') || ''}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 30 分鐘倒數計時器
+    let timerSeconds = 30 * 60;
+    let timerInterval = null;
+
+    function formatTimer(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function toggleTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        document.getElementById('playIcon').style.display = 'block';
+        document.getElementById('pauseIcon').style.display = 'none';
+      } else {
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            document.getElementById('timerDisplay').innerText = formatTimer(timerSeconds);
+            if (timerSeconds <= 300) {
+              document.getElementById('timerDisplay').style.color = 'var(--rose-400)';
+            }
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+        }, 1000);
+        document.getElementById('playIcon').style.display = 'none';
+        document.getElementById('pauseIcon').style.display = 'block';
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerSeconds = 30 * 60;
+      document.getElementById('timerDisplay').innerText = "30:00";
+      document.getElementById('timerDisplay').style.color = 'var(--amber-400)';
+      document.getElementById('playIcon').style.display = 'block';
+      document.getElementById('pauseIcon').style.display = 'none';
+    }
+
+    // 第8頁：同一個方框一鍵去識別化互動
+    let isDeided = false;
+    function toggleDeidDemo() {
+      const btn = document.getElementById('deidBtn');
+      const box = document.getElementById('singleRecordBox');
+      const container = document.getElementById('deidCardContainer');
+      const badge = document.getElementById('deidStatusBadge');
+      const hint = document.getElementById('deidHint');
+
+      const nameEl = document.getElementById('deidName');
+      const chartEl = document.getElementById('deidChart');
+      const birthEl = document.getElementById('deidBirth');
+      const idEl = document.getElementById('deidId');
+      const addrEl = document.getElementById('deidAddr');
+
+      if (!isDeided) {
+        // 變換為去識別化安全狀態
+        container.style.borderColor = 'var(--emerald-500)';
+        container.classList.add('glow-emerald');
+        box.style.borderColor = 'var(--emerald-500)';
+
+        badge.style.background = 'var(--emerald-950)';
+        badge.style.borderColor = 'var(--emerald-500)';
+        badge.style.color = 'var(--emerald-400)';
+        badge.innerText = "🟢 安全去識別化狀態：敏感個資已全面遮蔽，Agent 可安全處理！";
+
+        hint.style.color = 'var(--emerald-400)';
+        hint.innerText = "個資已隱藏 (Safe)";
+
+        nameEl.className = "deid-tag masked";
+        nameEl.innerText = "[男 / 67歲]";
+
+        chartEl.className = "deid-tag masked";
+        chartEl.innerText = "[病歷號已隱藏]";
+
+        birthEl.className = "deid-tag masked";
+        birthEl.innerText = "[年齡：67歲]";
+
+        idEl.className = "deid-tag masked";
+        idEl.innerText = "[身分證已遮蔽]";
+
+        addrEl.className = "deid-tag masked";
+        addrEl.innerText = "[居住地已隱藏]";
+
+        btn.innerHTML = '<span>↺ 點擊還原：查看原始對比</span>';
+        btn.style.background = 'var(--bg-card)';
+        btn.style.color = '#fff';
+        btn.style.border = '1px solid var(--border-base)';
+        isDeided = true;
+      } else {
+        // 還原為暴露狀態
+        container.style.borderColor = 'var(--rose-500)';
+        container.classList.remove('glow-emerald');
+        box.style.borderColor = 'var(--rose-500)';
+
+        badge.style.background = 'var(--rose-950)';
+        badge.style.borderColor = 'var(--rose-500)';
+        badge.style.color = 'var(--rose-400)';
+        badge.innerText = "⚠️ 原始未去識別化狀態（含敏感個資，嚴禁上傳）";
+
+        hint.style.color = 'var(--rose-400)';
+        hint.innerText = "個資暴露中";
+
+        nameEl.className = "deid-tag exposed";
+        nameEl.innerText = "王大明";
+
+        chartEl.className = "deid-tag exposed";
+        chartEl.innerText = "10982341";
+
+        birthEl.className = "deid-tag exposed";
+        birthEl.innerText = "48 年 3 月 5 日生";
+
+        idEl.className = "deid-tag exposed";
+        idEl.innerText = "A123456789";
+
+        addrEl.className = "deid-tag exposed";
+        addrEl.innerText = "竹北市光明六路12號";
+
+        btn.innerHTML = '<span>✨ 點擊執行：一鍵去識別化</span>';
+        btn.style.background = 'linear-gradient(135deg, var(--cyan-500), var(--teal-400))';
+        btn.style.color = '#020617';
+        btn.style.border = 'none';
+        isDeided = false;
+      }
+    }
+
+    // FAQ 卡片展開/收合
+    function toggleFaq(id) {
+      const el = document.getElementById(id);
+      const arrow = document.getElementById(id + 'Arrow');
+      if (el.style.display === 'none') {
+        el.style.display = 'block';
+        arrow.innerText = '▲';
+      } else {
+        el.style.display = 'none';
+        arrow.innerText = '▼';
+      }
+    }
+
+    // 離線相容剪貼簿複製（支援 iOS Safari / Android / PC 離線 file:///）
+    function copyPrompt(elemId) {
+      const el = document.getElementById(elemId);
+      const text = el.innerText || el.textContent;
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("已成功複製指令！可直接貼給 Agent");
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast("已成功複製指令！可直接貼給 Agent");
+      } catch (err) {
+        showToast("複製失敗，請手動選取文字複製");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    // 啟動初始化
+    updateSlide();
+  </script>
+</body>
+</html>

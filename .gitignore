@@ -1,0 +1,11 @@
+# GDrive & OS 專用排除清單
+desktop.ini
+.DS_Store
+Thumbs.db
+*.tmp
+~$*
+
+# 敏感資訊與密鑰
+.env
+*.key
+credentials.*
